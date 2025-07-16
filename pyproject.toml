@@ -16,21 +16,21 @@ classifiers = [
 
 
 [tool.poetry.dependencies]
-python = "^3.10"
-chromadb = "^0.4.22"
-pandas = "2.2.0"
+python = "^3.11"
+chromadb = "^1.0.15"
+pandas = "2.3.1"
 plotly = "5.19.0"
 mysql-connector-python = "^8.3.0"
 google-generativeai="0.3.2"
 llama-cpp-python = "0.2.47"
 openai = "^1.12.0"
 sqlparse = "^0.4.4"
-numpy = "^1.26.4"
+numpy = "2.3.1"
 sentence-transformers = "^2.3.1"
 psycopg2-binary = "^2.9.9"
-faiss-cpu = "^1.8.0"
-pysqlite3-binary = "^0.5.2.post3"
+faiss-cpu = "^1.11.0.post1"
 transformers = "^4.38.2"
+qdrant-client = "^1.14.3"
 
 
 [build-system]
