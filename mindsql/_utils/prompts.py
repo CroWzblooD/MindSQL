@@ -1,6 +1,18 @@
-DEFAULT_PROMPT: str = """As a {dialect_name} expert, your task is to generate SQL queries based on user questions. Ensure that your {dialect_name} queries are syntactically correct and tailored to the user's inquiry. Retrieve at most 10 results using the LIMIT clause and order them for relevance. Avoid querying for all columns from a table. Select only the necessary columns wrapped in backticks (`). Use CURDATE() to handle 'today' queries and employ the LIKE clause for precise matches in {dialect_name}. Carefully consider column names and their respective tables to avoid querying non-existent columns. Stop after delivering the SQLQuery, avoiding follow-up questions.
+DEFAULT_PROMPT: str = """As a {dialect_name} expert, your task is to generate accurate SQL queries based on user questions and the provided table schemas.
 
-Follow this format:
+CRITICAL INSTRUCTIONS:
+1. Carefully analyze the table schemas provided in the DDL statements below
+2. When user asks to "show TABLE_NAME" or "display TABLE_NAME table", select from that specific table
+3. Examine which columns exist in which tables - only query columns that actually exist
+4. Select meaningful, relevant columns that answer the user's question (avoid unnecessary columns)
+5. Use backticks (`) to wrap table and column names for {dialect_name} compatibility
+6. Add LIMIT clause (maximum 10 rows) to prevent excessive results
+7. Use ORDER BY to organize results logically
+8. Use CURDATE() function for queries involving "today"
+9. Match filter values exactly as they appear in the schema (case-sensitive)
+10. Double-check your table and column names against the provided DDL before generating SQL
+
+Follow this exact format:
 Question: User's question here
 SQLQuery: Your SQL query without preamble
 
@@ -54,6 +66,5 @@ PLOTLY_PROMPT = """You are a proficient Python developer with expertise in the P
     - Ensure that the code is well-commented for readability and syntactically correct.
     """
 
-SQL_EXCEPTION_RESPONSE = """Apologies for the inconvenience! 🙏 It seems the database is currently experiencing a bit 
-of a hiccup and isn't cooperating as we'd like. 🤖"""
+SQL_EXCEPTION_RESPONSE = """Apologies for the inconvenience! It seems the database is currently experiencing a bit of a hiccup and isn't cooperating as we'd like."""
 

@@ -49,7 +49,7 @@ class MindSQLCore:
         question_sql_list = self.vectorstore.retrieve_relevant_question_sql(question, **kwargs)
         prompt = self.build_sql_prompt(question=question, connection=connection, question_sql_list=question_sql_list,
                                        tables=tables, **kwargs)
-        log.info(prompt)
+        # log.info(prompt)  # Don't show full prompt to users
         llm_response = self.llm.invoke(prompt, **kwargs)
         return _helper.helper.extract_sql(llm_response)
 
@@ -176,13 +176,28 @@ class MindSQLCore:
         Returns:
             list[str]: The list of DDL statements.
         """
+        # Try vector store first (semantic search - best for finding relevant tables)
+        vector_ddls = []
+        try:
+            vector_ddls = self.vectorstore.retrieve_relevant_ddl(question, **kwargs)
+        except Exception as e:
+            log.info(f"Vector store retrieval failed: {e}")
+        
+        # If vector store returns good results, use them
+        if vector_ddls and len(vector_ddls) > 0:
+            return vector_ddls
+        
+        # Fallback: get all DDLs from database if vector store fails
         if tables and connection:
             ddl_statements = []
             for table_name in tables:
-                ddl_statements.append(self.database.get_ddl(connection=connection, table_name=table_name))
-        else:
-            ddl_statements = self.vectorstore.retrieve_relevant_ddl(question, **kwargs)
-        return ddl_statements
+                try:
+                    ddl_statements.append(self.database.get_ddl(connection=connection, table_name=table_name))
+                except Exception as e:
+                    log.info(f"Failed to get DDL for table {table_name}: {e}")
+            return ddl_statements
+        
+        return []
 
     def ask_db(self, connection, question: Union[str, None] = None, table_names: list = None, visualize: bool = False,
                **kwargs) -> dict:

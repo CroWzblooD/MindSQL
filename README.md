@@ -1,6 +1,6 @@
 # 🧠 MindSQL
 
-MindSQL is a Python RAG (Retrieval-Augmented Generation) Library designed to streamline the interaction between users and their databases using just a few lines of code. With seamless integration for renowned databases such as PostgreSQL, MySQL, and SQLite, MindSQL also extends its capabilities to major databases like Snowflake and BigQuery by extending the `IDatabase` Interface. This library utilizes large language models (LLM) like GPT-4, Llama 2, Google Gemini, and supports knowledge bases like ChromaDB and Faiss.
+MindSQL is a Python RAG (Retrieval-Augmented Generation) Library designed to streamline the interaction between users and their databases using just a few lines of code. With seamless integration for renowned databases such as PostgreSQL, MySQL, MariaDB, and SQLite, MindSQL also extends its capabilities to major databases like Snowflake and BigQuery by extending the `IDatabase` Interface. This library utilizes large language models (LLM) like GPT-4, Llama 2, Google Gemini, and supports vector stores like ChromaDB, FAISS, Qdrant, and MariaDB Vector (with native VECTOR data type support).
 
 ![MindSQL Chart](https://github.com/Sammindinventory/MindSQL/assets/77489054/bc993117-8da9-4b4f-b217-8a33db65c342)
 
@@ -108,6 +108,3 @@ We value your feedback and strive to improve MindSQL. Here's how you can share y
 - Be constructive and specific in your feedback to help us understand your perspective better.
 
 Thank you for your interest in contributing to our project! We appreciate your support and look forward to working with you. 🚀
-
-
-

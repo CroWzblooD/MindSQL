@@ -10,7 +10,7 @@ from chromadb.utils import embedding_functions
 
 from . import IVectorstore
 
-sentence_transformer_ef = embedding_functions.SentenceTransformerEmbeddingFunction(model_name="WhereIsAI/UAE-Large-V1")
+sentence_transformer_ef = embedding_functions.SentenceTransformerEmbeddingFunction(model_name="all-MiniLM-L6-v2")
 
 
 class ChromaDB(IVectorstore):

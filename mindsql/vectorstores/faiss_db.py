@@ -9,7 +9,7 @@ from sentence_transformers import SentenceTransformer
 
 from . import IVectorstore
 
-sentence_transformer_ef = SentenceTransformer("WhereIsAI/UAE-Large-V1")
+sentence_transformer_ef = SentenceTransformer("all-MiniLM-L6-v2")
 
 
 class Faiss(IVectorstore):

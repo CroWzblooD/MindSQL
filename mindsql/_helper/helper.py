@@ -62,13 +62,26 @@ def extract_sql(llm_response: str) -> str:
         log.info(LOG_AND_RETURN_CONSTANT.format(llm_response, extracted_sql))
         return extracted_sql
 
+    # Check for SQLQuery: label (common LLM format)
+    if "SQLQuery:" in llm_response:
+        # Extract everything after SQLQuery:
+        sql_part = llm_response.split("SQLQuery:", 1)[1].strip()
+        # Remove any trailing text after the query
+        if "\n\n" in sql_part:
+            sql_part = sql_part.split("\n\n")[0].strip()
+        return log_and_return(sql_part)
+    
+    # Check for SQL in code blocks
     sql_match = re.search(r"```(sql)?\n(.+?)```", llm_response, re.DOTALL)
     if sql_match:
         return log_and_return(sql_match.group(2).replace("`", ""))
+    
+    # Check for SELECT statements
     elif has_select_and_semicolon(llm_response):
         start_sql = llm_response.find("SELECT")
         end_sql = llm_response.find(";")
         return log_and_return(llm_response[start_sql:end_sql + 1].replace("`", ""))
+    
     return llm_response
 
 

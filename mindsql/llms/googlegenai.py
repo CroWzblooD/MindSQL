@@ -22,7 +22,12 @@ class GoogleGenAi(ILlm):
             raise ValueError(GOOGLE_GEN_AI_APIKEY_ERROR)
         api_key = config.pop('api_key')
         genai.configure(api_key=api_key)
-        self.model = genai.GenerativeModel('gemini-pro', **config)
+        
+        # Get model name from config, default to gemini-1.5-flash
+        model_name = config.pop('model', 'gemini-1.5-flash')
+        # Store temperature for later use if provided
+        self.default_temperature = config.pop('temperature', 0.1)
+        self.model = genai.GenerativeModel(model_name, **config)
 
     def system_message(self, message: str) -> any:
         """
@@ -75,7 +80,7 @@ class GoogleGenAi(ILlm):
         if prompt is None or len(prompt) == 0:
             raise Exception("Prompt cannot be empty.")
 
-        temperature = kwargs.get("temperature", 0.1)
+        temperature = kwargs.get("temperature", self.default_temperature)
         response = self.model.generate_content(prompt,
                                                generation_config=genai.GenerationConfig(temperature=temperature))
         return response.text
