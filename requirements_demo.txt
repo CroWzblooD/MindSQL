@@ -1,0 +1,29 @@
+# MindSQL Demo CLI Requirements
+# ===============================
+# Beautiful terminal interface for demo video
+
+# Core visualization
+rich>=13.7.0
+
+# MindSQL dependencies (if not already installed)
+python-dotenv>=1.0.0
+pandas>=2.0.0
+numpy>=1.24.0
+
+# Database connectors
+mariadb>=1.1.0
+mysql-connector-python>=8.0.0
+
+# Vector stores
+chromadb>=0.4.0
+faiss-cpu>=1.7.4
+
+# LLM integration
+google-generativeai>=0.3.0
+
+# ML models
+sentence-transformers>=2.2.0
+
+# Optional but recommended
+plotly>=5.18.0
+
