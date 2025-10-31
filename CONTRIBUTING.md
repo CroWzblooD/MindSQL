@@ -1,51 +1,281 @@
 # Contributing Guidelines
 
-Thank you for your interest in contributing to MindSQL! Your contributions help improve the project for everyone. Before you get started, please take a moment to review these guidelines to ensure a smooth collaboration process.
+Thank you for your interest in contributing to the MariaDB Vector Store integration for MindSQL!
 
-## Getting Started
+## Quick Setup
 
-1. **Fork the Repository**: Fork the MindSQL repository to your own GitHub account.
+```bash
+# Fork and clone
+git clone https://github.com/YOUR_USERNAME/MindSQL.git
+cd MindSQL
 
-2. **Clone the Repository**: Clone your fork of the repository locally onto your machine.
+# Setup environment
+python -m venv venv
+source venv/bin/activate  # Windows: venv\Scripts\activate
 
-    ```bash
-    git clone https://github.com/{YourUsername}/MindSQL.git
-    ```
+# Install dependencies
+pip install -r requirements_demo.txt
+pip install mariadb pytest black flake8
 
-3. **Create a Branch**: Create a new branch for your work based on the `master` branch.
+# Setup test database
+mysql -u root -p
+CREATE DATABASE mindsql_test;
+CREATE USER 'mindsql_test'@'localhost' IDENTIFIED BY 'test_password';
+GRANT ALL PRIVILEGES ON mindsql_test.* TO 'mindsql_test'@'localhost';
 
-    ```bash
-    git checkout -b your-branch-name master
-    ```
+# Verify
+pytest tests/ -v
+```
 
-## Making Changes
+---
 
-1. **Adhere to Coding Standards**: Make sure your code follows the PEP8 coding standards and conventions used in the project. Consistency makes maintenance easier for everyone.
+## Coding Standards
 
-2. **Test Your Changes**: Thoroughly test your changes to ensure they work as intended. Add a test case in the `tests` folder to cover your changes if applicable.
+### PEP 8 Compliance
 
-## Submitting Changes
+```python
+# 4 spaces, max 100 chars, type hints required
 
-1. **Commit Your Changes**: Once you've made your changes, commit them to your branch with clear and descriptive commit messages.
+def process_query(question: str, n_results: int = 5) -> List[str]:
+    """
+    Brief description.
+    
+    Args:
+        question: Description
+        n_results: Description
+        
+    Returns:
+        Description
+    """
+    return results
+```
 
-    ```bash
-    git commit -am 'Add descriptive commit message'
-    ```
+### Naming Conventions
 
-2. **Push Your Changes**: Push your changes to your fork on GitHub.
+- Classes: `PascalCase`
+- Functions/variables: `snake_case`
+- Constants: `UPPER_CASE`
+- Private methods: `_leading_underscore`
 
-    ```bash
-    git push origin your-branch-name
-    ```
+### Code Quality
 
-3. **Submit a Pull Request**: Go to the MindSQL repository on GitHub and submit a pull request from your branch to the `master` branch. Be sure to include a clear description of the problem you're solving and the solution you're proposing.
+```bash
+# Format and lint
+black mindsql/ tests/
+flake8 mindsql/ tests/ --max-line-length=100
 
-## Code of Conduct
+# Before commit
+pytest tests/ -v && black --check mindsql/ tests/ && flake8 mindsql/ tests/
+```
 
-Please note that MindSQL has a [Code of Conduct](./CODE_OF_CONDUCT.md). By participating in this project, you agree to abide by its terms.
+---
 
-## Need Help?
+## Testing
 
-If you need any assistance or have questions about contributing, feel free to reach out to us via GitHub issues or email.
+### Writing Tests
 
-We appreciate your contributions to MindSQL and thank you for helping make it better!
+```python
+import pytest
+from mindsql.vectorstores import MariaDBVectorStore
+
+class TestMariaDBVectorStore:
+    @pytest.fixture
+    def vectorstore(self):
+        config = {'host': 'localhost', 'user': 'mindsql_test', 'password': 'test_password'}
+        return MariaDBVectorStore(config=config)
+    
+    def test_add_ddl(self, vectorstore):
+        result = vectorstore.add_ddl("CREATE TABLE users (id INT);")
+        assert "Successfully" in result
+```
+
+### Running Tests
+
+```bash
+pytest tests/ -v                    # All tests
+pytest tests/ --cov=mindsql -v      # With coverage
+pytest tests/test_file.py::test_name -v  # Specific test
+```
+
+**Requirements:**
+- New features: 80% coverage minimum
+- Bug fixes: Include test reproducing bug
+- All public methods tested
+
+---
+
+## Pull Request Process
+
+### Workflow
+
+```bash
+# 1. Create branch
+git checkout -b feature/your-feature
+
+# 2. Make changes
+# Edit code, add tests, update docs
+
+# 3. Test and format
+pytest tests/ -v
+black mindsql/ tests/
+flake8 mindsql/ tests/
+
+# 4. Commit with proper message
+git add .
+git commit -m "feat: add batch processing support"
+
+# 5. Push and create PR
+git push origin feature/your-feature
+```
+
+### Commit Message Format
+
+```
+<type>: <short description>
+
+[Optional longer description]
+
+[Optional footer: Closes #123]
+```
+
+**Types:**
+- `feat`: New feature
+- `fix`: Bug fix
+- `docs`: Documentation
+- `test`: Tests
+- `refactor`: Code refactoring
+
+**Examples:**
+```
+feat: add batch embedding support
+
+fix: resolve connection timeout issue
+
+docs: update API reference for retrieve_ddl
+```
+
+### PR Checklist
+
+- [ ] Code follows PEP 8
+- [ ] Tests pass (`pytest tests/ -v`)
+- [ ] Code formatted (`black mindsql/ tests/`)
+- [ ] Documentation updated
+- [ ] No breaking changes (or documented)
+
+---
+
+## Issue Reporting
+
+### Bug Report Template
+
+```markdown
+**Description:** Brief bug description
+
+**Steps to Reproduce:**
+1. Step one
+2. Step two
+
+**Expected:** What should happen
+**Actual:** What actually happens
+
+**Environment:**
+- Python: 3.11.6
+- MariaDB: 10.11.5
+- OS: Ubuntu 22.04
+
+**Error:**
+```
+[Paste error message]
+```
+```
+
+### Feature Request Template
+
+```markdown
+**Description:** What feature you want
+
+**Use Case:** Why it's needed
+
+**Proposed Solution:** How it could work
+```
+
+---
+
+## Development Best Practices
+
+### Code Quality
+
+- Keep functions small and focused
+- Use meaningful names
+- Add docstrings to public methods
+- Handle errors gracefully
+- Follow DRY principle
+
+### Testing
+
+- Test edge cases and errors
+- Use descriptive test names
+- Keep tests independent
+- Mock external dependencies
+
+### Security
+
+- Never commit credentials (use environment variables)
+- Validate all inputs
+- Use parameterized queries
+- Keep dependencies updated
+
+### Documentation
+
+When adding features:
+- Update README.md
+- Add usage examples
+- Update API reference
+- Add docstrings
+
+---
+
+## Code Review Guidelines
+
+### For Contributors
+
+- Keep PRs small and focused
+- Write clear descriptions
+- Respond to feedback promptly
+- Be open to suggestions
+
+### For Reviewers
+
+- Be constructive and specific
+- Explain the "why"
+- Focus on code, not person
+- Acknowledge good work
+
+---
+
+## Getting Help
+
+- Check documentation first
+- Search existing issues
+- Open new issue with details
+- Ask in GitHub Discussions
+
+---
+
+## Resources
+
+**Documentation:**
+- [MariaDB VECTOR](https://mariadb.com/kb/en/vector-data-type/)
+- [MindSQL Project](https://github.com/Mindinventory/MindSQL)
+- [Python PEP 8](https://pep8.org/)
+
+**Tools:**
+- [pytest](https://docs.pytest.org/)
+- [black](https://black.readthedocs.io/)
+- [MariaDB Connector](https://mariadb.com/docs/appdev/connector-python/)
+
+---
+
+Thank you for contributing!
+
+**Version:** 1.0.0
