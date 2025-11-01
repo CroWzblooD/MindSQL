@@ -1,6 +1,6 @@
 ![mariadbimage](https://github.com/user-attachments/assets/763034b7-7ecb-4397-875d-0397b878e9ff)
 
-# Native MariaDB Vector Store for MindSQL
+# Native MariaDB Vector Store Support for MindSQL
 
 ## MariaDB Python Hackathon 2025 - Integration Track
 
@@ -22,6 +22,8 @@
 ---
 
 ## Overview
+
+<img width="1920" height="544" alt="Gemini_Generated_Image_d93qe1d93qe1d93q" src="https://github.com/user-attachments/assets/a839758d-a47e-405a-ad92-821cfef84198" />
 
 This project integrates MariaDB's native VECTOR(384) data type with MindSQL, a Python RAG framework for text-to-SQL conversion. Production-ready vector store implementation that enables unified vector-relational storage, eliminating the need for separate vector database infrastructure alongside production MariaDB instances.
 
