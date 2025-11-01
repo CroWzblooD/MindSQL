@@ -1,8 +1,8 @@
+![mariadbimage](https://github.com/user-attachments/assets/763034b7-7ecb-4397-875d-0397b878e9ff)
+
 # Native MariaDB Vector Store for MindSQL
 
-## MariaDB Python Hackathon 2024 - Integration Track
-
-**Submission Deadline:** November 2, 2024, 23:59 IST
+## MariaDB Python Hackathon 2025 - Integration Track
 
 ### Important Links
 
@@ -18,12 +18,6 @@
 - [x] **Documentation:** Comprehensive README, API reference, usage examples
 - [ ] **Demo Video:** 2-4 minute YouTube video showcasing the project
 - [x] **LinkedIn Post:** Announced submission on LinkedIn
-
-### Team
-
-**Team Name:** Squirtle Squad  
-**Track:** Integration  
-**Project:** Native MariaDB Vector Store for MindSQL RAG Framework
 
 ---
 
@@ -67,19 +61,8 @@ Native MariaDB Vector Store implementing MindSQL's IVectorstore interface with t
 
 ## Architecture
 
-### System Design
+<img width="918" height="604" alt="Screenshot 2025-10-11 000201" src="https://github.com/user-attachments/assets/9167d6a4-41fd-4438-8805-123d2afe4158" />
 
-```
-User Query (Natural Language)
-    ↓
-MindSQL RAG Framework
-    ├─→ MariaDB Vector Store (VECTOR(384) + FULLTEXT + JSON)
-    └─→ LLM Provider (Gemini/OpenAI)
-    ↓
-MariaDB Database Server
-    ↓
-Results
-```
 
 ### Database Schema
 
@@ -201,33 +184,6 @@ print(response['result'])
 connection.close()
 ```
 
-### Advanced Usage
-
-**Manual Vector Operations:**
-```python
-vectorstore = MariaDBVectorStore(config=config)
-
-# Index DDL
-vectorstore.index_ddl("CREATE TABLE users (id INT, name VARCHAR(100));")
-
-# Store question-SQL pair
-vectorstore.index_question_sql(
-    question="Show all users",
-    sql="SELECT * FROM users;"
-)
-
-# Retrieve similar queries
-similar = vectorstore.retrieve_relevant_question_sql(
-    question="List all customers", 
-    n_results=5
-)
-
-# Retrieve relevant DDLs
-ddls = vectorstore.retrieve_relevant_ddl(
-    question="Show user information",
-    n_results=3
-)
-```
 
 ### Interactive Demo CLI
 
@@ -235,10 +191,6 @@ ddls = vectorstore.retrieve_relevant_ddl(
 cd tests
 python mindsql_demo_cli.py
 ```
-
-Features: configuration wizard, schema discovery, automatic indexing, natural language queries, beautiful visualization.
-
----
 
 ## API Reference
 
@@ -276,249 +228,11 @@ class MariaDBVectorStore(IVectorstore):
     def delete_vectorstore_data(self, item_id: str, **kwargs) -> bool:
         """Delete specific entry. Returns success boolean."""
 ```
-
-**Configuration Options:**
-```python
-config = {
-    'host': 'localhost',      # Required
-    'user': 'username',       # Required
-    'password': 'password',   # Required
-    'port': 3306,            # Optional, default 3306
-    'database': 'mydb',      # Optional
-    'collection_name': 'mindsql_vectors'  # Optional
-}
-```
-
----
-
-## Performance
-
-### Benchmarks
-
-**Test Environment:** MariaDB 10.11.5, Python 3.11.6, 16GB RAM, Intel i7
-
-| Operation | Time | Notes |
-|-----------|------|-------|
-| Schema Indexing | 0.3s | Per table, one-time |
-| Query Embedding | 0.1s | Per query |
-| Vector Retrieval | 0.2s | Top 10 results |
-| SQL Generation | 0.8s | LLM call |
-| **Total Query Time** | **1.2s** | End-to-end average |
-
-**Storage:** ~2KB per embedded schema, ~3KB per question-SQL pair
-
-**Accuracy:**
-- Cold start: 78%
-- With learning: 92%
-- Simple queries: 95%
-- Complex queries: 88%
-
----
-
-## Testing
-
-```bash
-# Run all tests
-pytest tests/ -v
-
-# With coverage
-pytest tests/ --cov=mindsql --cov-report=html
-
-# Specific test
-pytest tests/test_mariadb_vector.py -v
-```
-
-**Coverage:** 88% overall
-
-**Test Areas:** Vector operations, FULLTEXT search, JSON metadata, MindSQL integration, error handling
-
----
-
-## Production Deployment
-
-### Database Setup
-
-```sql
-CREATE DATABASE mindsql_production;
-CREATE USER 'mindsql_app'@'%' IDENTIFIED BY 'secure_password';
-GRANT ALL PRIVILEGES ON mindsql_production.* TO 'mindsql_app'@'%';
-```
-
-### Security Best Practices
-
-**Environment Variables:**
-```python
-import os
-config = {
-    'host': os.getenv('DB_HOST'),
-    'user': os.getenv('DB_USER'),
-    'password': os.getenv('DB_PASSWORD'),
-    'database': os.getenv('DB_NAME')
-}
-```
-
-**TLS/SSL for Production:**
-```python
-config = {
-    'host': 'mariadb-cluster.internal',
-    'ssl': {
-        'ca': '/path/to/ca-cert.pem',
-        'cert': '/path/to/client-cert.pem',
-        'key': '/path/to/client-key.pem'
-    }
-}
-```
-
-**Read-Only Users:**
-```sql
-CREATE USER 'mindsql_readonly'@'%' IDENTIFIED BY 'password';
-GRANT SELECT ON production_db.* TO 'mindsql_readonly'@'%';
-```
-
----
-
-## Troubleshooting
-
-### Common Issues
-
-**MariaDB connector fails:**
-```bash
-pip install --upgrade mariadb
-systemctl status mariadb
-mysql -u username -p -h localhost
-```
-
-**VECTOR data type not supported:**
-```sql
-SELECT VERSION();  -- Must be 10.7+
-```
-
-**Authentication plugin error:**
-```sql
-ALTER USER 'username'@'localhost' IDENTIFIED WITH mysql_native_password BY 'password';
-FLUSH PRIVILEGES;
-```
-
-**Embedding model download fails:**
-```bash
-python -c "from sentence_transformers import SentenceTransformer; SentenceTransformer('all-MiniLM-L6-v2')"
-```
-
----
-
-## Comparison with Alternatives
-
-### vs ChromaDB
-
-| Feature | MariaDB Vector | ChromaDB |
-|---------|---------------|----------|
-| Infrastructure | Single database | Separate service |
-| ACID Compliance | Full | None |
-| Backup | Unified | Separate |
-| Deployment | Simple | Complex |
-| Cost | Lower | Higher |
-
-### vs FAISS
-
-| Feature | MariaDB Vector | FAISS |
-|---------|---------------|-------|
-| Persistence | Native DB | File-based |
-| Scalability | DB scaling | Manual |
-| Concurrent Access | MVCC support | Requires coordination |
-| Maintenance | Standard DB tools | Custom implementation |
-
----
-
-## Real-World Use Cases
-
-### Business Intelligence
-
-Business analysts query data naturally without SQL knowledge. System learns patterns and improves accuracy over time.
-
-```python
-# Question
-"What are the top 5 products by revenue this quarter?"
-
-# Generated SQL
-SELECT p.product_name, SUM(oi.quantity * oi.unit_price) as revenue
-FROM products p
-JOIN order_items oi ON p.product_id = oi.product_id
-JOIN orders o ON oi.order_id = o.order_id
-WHERE o.order_date >= DATE_SUB(NOW(), INTERVAL 3 MONTH)
-GROUP BY p.product_id
-ORDER BY revenue DESC
-LIMIT 5;
-```
-
-### Database Documentation
-
-Developers explore unfamiliar schemas through semantic search. Context-aware explanations of table relationships.
-
-### Customer Support
-
-Support teams perform quick lookups using natural language. Safe read-only operations, no training required.
-
----
-
-## Implementation Details
-
-### Hybrid Search Strategy
-
-```python
-# FULLTEXT search for exact matches
-SELECT question, sql_query,
-       MATCH(question, sql_query) AGAINST (? IN NATURAL LANGUAGE MODE) as score
-FROM mindsql_vectors_sql_pairs 
-WHERE MATCH(question, sql_query) AGAINST (?)
-ORDER BY score DESC LIMIT 10;
-
-# Combined with vector similarity for semantic understanding
-```
-
-### Vector Storage Format
-
-```python
-# Embedding formatted for VEC_FromText()
-def _format_vector_for_insertion(self, embedding_array):
-    return '[' + ','.join(f'{float(x)}' for x in embedding_array) + ']'
-
-# Insertion
-INSERT INTO mindsql_vectors (id, document, embedding, metadata)
-VALUES (?, ?, VEC_FromText(?), ?);
-```
-
-### Learning System
-
-Successful question-SQL pairs automatically stored:
-1. User asks question in natural language
-2. System generates SQL using LLM
-3. SQL executes successfully
-4. Pair embedded and stored in MariaDB
-5. Future similar questions reference this example
-6. Accuracy improves with usage
-
----
-
-## Project Structure
-
-```
-mindsql/
-├── vectorstores/
-│   ├── __init__.py
-│   ├── ivectorstore.py          # Interface
-│   ├── mariadb_vector.py        # Our implementation (394 lines)
-│   ├── chromadb.py              # Existing
-│   └── faiss_db.py              # Existing
-tests/
-├── mindsql_demo_cli.py          # Interactive demo (909 lines)
-└── test_mariadb_vector.py       # Test suite
-```
-
 ---
 
 ## Contributing
 
-We welcome contributions! This integration was created for MariaDB Python Hackathon 2024.
+We welcome contributions! This integration was created for MariaDB Python Hackathon 2025.
 
 ### Quick Start
 
@@ -587,6 +301,9 @@ Built upon outstanding work from sentence-transformers, MariaDB Server, and the 
 
 ---
 
-**Built for MariaDB Python Hackathon 2024**
+### Team
 
-Making enterprise RAG simple with unified vector-relational storage.
+**Team Name:** Squirtle Squad  
+**Track:** Integration  
+**Project:** Native MariaDB Vector Store for MindSQL RAG Framework
+
