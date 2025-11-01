@@ -53,7 +53,7 @@ Native MariaDB Vector Store implementing MindSQL's IVectorstore interface with t
 
 ### Technology Stack
 
-- **Database:** MariaDB 10.7+ (VECTOR support required)
+- **Database:** MariaDB 11.7+ (VECTOR support required)
 - **Embeddings:** sentence-transformers/all-MiniLM-L6-v2 (384 dimensions)
 - **Connector:** Official mariadb Python package
 - **Framework:** MindSQL RAG Core
@@ -108,31 +108,151 @@ CREATE TABLE mindsql_vectors_sql_pairs (
 ### Prerequisites
 
 - Python 3.11+
-- MariaDB 10.7+ with VECTOR support
+- MariaDB 11.7+ with VECTOR support
 - 4GB RAM minimum
 
-### Quick Setup
+## Installation & Setup
 
+### Step 1: Install MariaDB
+
+**Windows:**
 ```bash
-# Clone repository
-git clone https://github.com/Mindinventory/MindSQL.git
-cd MindSQL
+choco install mariadb
+```
+Or download from [MariaDB Downloads](https://mariadb.org/download/)
 
-# Install dependencies
-pip install -r requirements_demo.txt
-pip install mariadb sentence-transformers google-generativeai
-
-# Verify MariaDB VECTOR support
-mysql -u root -p -e "SELECT VERSION();"  # Should be 10.7+
+**Linux:**
+```bash
+sudo apt update
+sudo apt install mariadb-server mariadb-client
+sudo systemctl start mariadb
+sudo systemctl enable mariadb
 ```
 
-### Environment Configuration
+**macOS:**
+```bash
+brew install mariadb
+brew services start mariadb
+```
 
-Create `.env` file:
+Verify installation:
+```bash
+mariadb --version
+```
+Version must be 10.7 or higher for VECTOR support.
+
+### Step 2: Setup MariaDB Database
+
+```bash
+mariadb -u root -p
+```
+
+Create database and user:
+```sql
+CREATE DATABASE mindsql_demo;
+CREATE USER 'mindsql_user'@'localhost' IDENTIFIED BY 'mindsql_password';
+GRANT ALL PRIVILEGES ON mindsql_demo.* TO 'mindsql_user'@'localhost';
+FLUSH PRIVILEGES;
+EXIT;
+```
+
+### Step 3: Clone and Install Python Dependencies
+
+```bash
+git clone https://github.com/Mindinventory/MindSQL.git
+cd MindSQL
+```
+
+Install Python packages:
+```bash
+pip install mariadb
+pip install sentence-transformers
+pip install google-generativeai
+pip install rich
+pip install python-dotenv
+pip install pandas
+pip install numpy
+```
+
+Or install all at once:
+```bash
+pip install -r requirements_demo.txt
+```
+
+### Step 4: Get Google Gemini API Key
+
+1. Go to [Google AI Studio](https://aistudio.google.com/app/apikey)
+2. Create a new API key
+3. Copy the key
+
+### Step 5: Configure Environment
+
+Create `.env` file in project root:
 ```env
-API_KEY=your_google_gemini_api_key
+API_KEY=your_google_gemini_api_key_here
 LLM_MODEL=gemini-1.5-flash
-DB_URL=mariadb://username:password@localhost:3306/database_name
+DB_URL=mariadb://mindsql_user:mindsql_password@localhost:3306/mindsql_demo
+```
+
+### Step 6: Add Sample Data
+
+```bash
+mariadb -u mindsql_user -p mindsql_demo
+```
+
+Create sample tables:
+```sql
+CREATE TABLE customers (
+    customer_id INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(100),
+    email VARCHAR(100),
+    city VARCHAR(50),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE orders (
+    order_id INT PRIMARY KEY AUTO_INCREMENT,
+    customer_id INT,
+    order_date DATE,
+    total_amount DECIMAL(10,2),
+    status VARCHAR(20),
+    FOREIGN KEY (customer_id) REFERENCES customers(customer_id)
+);
+
+INSERT INTO customers (name, email, city) VALUES
+('John Doe', 'john@email.com', 'New York'),
+('Jane Smith', 'jane@email.com', 'Los Angeles'),
+('Bob Johnson', 'bob@email.com', 'Chicago');
+
+INSERT INTO orders (customer_id, order_date, total_amount, status) VALUES
+(1, '2024-10-15', 150.00, 'completed'),
+(2, '2024-10-20', 200.00, 'completed'),
+(1, '2024-10-25', 75.00, 'pending');
+
+EXIT;
+```
+
+### Step 7: Run Demo CLI
+
+```bash
+cd tests
+python mindsql_demo_cli.py
+```
+
+The demo will:
+1. Connect to MariaDB
+2. Discover your tables automatically
+3. Index table schemas into vector store
+4. Let you ask questions in natural language
+
+### Step 8: Try Sample Queries
+
+Once demo is running, try these questions:
+```
+Show all customers
+Which customers are from New York?
+What are the total orders for each customer?
+Show pending orders
 ```
 
 ---
@@ -184,14 +304,6 @@ response = minds.ask_db(
 print(response['sql'])
 print(response['result'])
 connection.close()
-```
-
-
-### Interactive Demo CLI
-
-```bash
-cd tests
-python mindsql_demo_cli.py
 ```
 
 ## API Reference
