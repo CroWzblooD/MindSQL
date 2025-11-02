@@ -383,9 +383,9 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines.
 
 ### MariaDB Foundation
 
-Thank you for organizing the MariaDB Python Hackathon 2024, developing native VECTOR data type support, and maintaining the MariaDB Python connector.
+Thank you for organizing the MariaDB Python Hackathon 2025, developing native VECTOR data type support, and maintaining the MariaDB Python connector.
 
-**Hackathon:** [MariaDB Python Hackathon 2024](https://mariadb-python.hackerearth.com/) - Integration Track
+**Hackathon:** [MariaDB Python Hackathon 2025](https://mariadb-python.hackerearth.com/) - Integration Track
 
 ### MindSQL Project
 
