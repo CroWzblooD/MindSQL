@@ -8,7 +8,7 @@
 
 - **Pull Request:** [#34 - Add MariaDB Integration with Native VECTOR Support](https://github.com/Mindinventory/MindSQL/pull/34)
 - **Hackathon Platform:** [MariaDB Python Hackathon](https://mariadb-python.hackerearth.com/)
-- **Demo Video:** [YouTube Demo](https://youtu.be/VIDEO_ID) _(To be added)_
+- **Demo Video:** [YouTube Demo]([https://youtu.be/VIDEO_ID](https://www.youtube.com/watch?v=Q67DPPTeAkQ))
 - **Original Repository:** [MindSQL by Mindinventory](https://github.com/Mindinventory/MindSQL)
 
 ### Submission Checklist
@@ -16,7 +16,7 @@
 - [x] **Code Repository:** Complete implementation with MariaDB native VECTOR(384) support
 - [x] **Pull Request:** [PR #34](https://github.com/Mindinventory/MindSQL/pull/34) submitted to MindSQL repository
 - [x] **Documentation:** Comprehensive README, API reference, usage examples
-- [ ] **Demo Video:** 2-4 minute YouTube video showcasing the project
+- [x] **Demo Video:** 2-4 minute YouTube video showcasing the project
 - [x] **LinkedIn Post:** Announced submission on LinkedIn
 
 ---
